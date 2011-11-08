@@ -15,4 +15,6 @@ public:
 
 #endif // UCPP_COMPILER
 
+#include "uSemaphore.h"
+
 #endif // USEMAPHORE_H
