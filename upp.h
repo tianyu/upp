@@ -16,10 +16,12 @@
 #define _Resume throw
 #define _At ; throw
 #define _Throw throw
+#define _Mutex
 
 #define COROUTINE \
     void resume();\
-    void suspend();
+    void suspend();\
+private:
 
 #define TASK \
     void resume();\
@@ -28,7 +30,11 @@
     public: \
     enum State{Start, Ready, Running, Blocked, Terminate};\
     State getState() const;\
-    private:
+private:
+
+#define MONITOR \
+    void _Accept(void(*func)(), ...); \
+private:
 
 _Task uMain {
 private:
@@ -87,6 +93,7 @@ public:
 #include "uC++.h"
 #define COROUTINE
 #define TASK
+#define MONITOR
 
 #endif // UCPP_COMPILER
 
