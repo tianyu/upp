@@ -17,84 +17,55 @@
 #define _At ; throw
 #define _Throw throw
 #define _Mutex
+#define _Nomutex
+#define _When if
+#define _Accept while
+#define or
 
 #define COROUTINE \
-    void resume();\
-    void suspend();\
+protected: \
+    void resume(); \
+    void suspend(); \
+public: \
+    void *stackPointer() const; \
+    unsigned int stackSize() const; \
+    void *stackStorage() const; \
+    ptrdiff_t stackFree() const; \
+    ptrdiff_t stackUsed() const; \
+    void verify(); \
+    \
+    const char *setName(const char *name); \
+    const char *getName() const; \
+    uBaseCoroutine &starter() const; \
+    uBaseCoroutine &resumer() const; \
+    \
+    static int asyncpoll(); \
+    \
+    enum CancellationState { CancelEnabled, CancelDisabled }; \
+    void cancel(); \
+    bool cancelled(); \
+    bool cancelInProgress(); \
+    \
+    _Event Failure; \
+    _Event UnhandledException; \
 private:
 
 #define TASK \
-    void resume();\
-    void suspend();\
+    COROUTINE \
+public: \
     static void yield(unsigned int times = 1);\
-    public: \
-    enum State{Start, Ready, Running, Blocked, Terminate};\
-    State getState() const;\
+    uBaseCoroutine &getCoroutine() const;\
+    int getActivePriority(); \
+    int getBasePriority(); \
 private:
-
-#define MONITOR \
-    void _Accept(void(*func)(), ...); \
-private:
-
-_Task uMain {
-private:
-    int argc;
-    char **argv;
-    int &uRetCode;
-    void main();
-};
-
-struct uProcessor {};
-
-class uSpinLock {
-public:
-    uSpinLock();
-};
-
-class uLock {
-public:
-    uLock(unsigned int value=1);
-    void acquire();
-    bool tryacquire();
-    void release();
-};
-
-class uOwnerLock {
-public:
-    uOwnerLock() {}
-    uBaseTask *owner();
-    unsigned int times();
-    void acquire();
-    bool tryacquire();
-    void release();
-};
-
-class uCondLock {
-public:
-    uCondLock();
-    bool empty();
-    void wait(uOwnerLock &lock);
-    void signal();
-    void broadcast();
-};
-
-class osacquire {
-public:
-    osacquire(std::ostream &out);
-};
-
-class isacquire {
-public:
-    isacquire(std::istream &in);
-};
 
 #else
 
-#include "uC++.h"
 #define COROUTINE
 #define TASK
-#define MONITOR
 
 #endif // UCPP_COMPILER
+
+#include "uC++.h"
 
 #endif // UCPP_H
